@@ -28,6 +28,19 @@ typedef struct {
   float rbp;
 } bp;
 
+typedef enum { ANUM, AADD, ASUB, ADIV, AMUL, AERR } ast_type;
+
+typedef struct ast_ {
+  ast_type type;
+  union {
+    int num;
+    struct {
+      struct ast_ *left;
+      struct ast_ *right;
+    } binary;
+  };
+} ast_;
+
 Token get_tok(LexState *L) {
   char c = *L->head++;
   switch (c) {
@@ -75,7 +88,7 @@ bp binding_power(T_type op) {
   }
 }
 
-int nud(ParseState *P) { return next(P).lexeme - '0'; }
+int num(ParseState *P) { return next(P).lexeme - '0'; }
 
 int is_op(T_type op) {
   switch (op) {
@@ -88,18 +101,6 @@ int is_op(T_type op) {
     return 0;
   }
 }
-
-typedef enum { ANUM, AADD, ASUB, ADIV, AMUL, AERR } ast_type;
-typedef struct ast_ {
-  ast_type type;
-  union {
-    int num;
-    struct {
-      struct ast_ *left;
-      struct ast_ *right;
-    } binary;
-  };
-} ast_;
 
 ast_ *mk_numNode(int num) {
   ast_ *n = malloc(sizeof *n);
@@ -130,9 +131,11 @@ ast_type ttoa(T_type tok) {
     return AERR;
   }
 }
-void advance(ParseState *P) { get_tok(P->L); }
+
+void advance(ParseState *P) { P->ctok = get_tok(P->L); }
+
 ast_ *parse_expression(ParseState *P, float min_bp) {
-  ast_ *lhs = mk_numNode(nud(P));
+  ast_ *lhs = mk_numNode(num(P));
   while (is_op(peek(P).type)) {
     Token tok = peek(P);
     bp bpow = binding_power(tok.type);
