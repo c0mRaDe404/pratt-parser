@@ -157,16 +157,19 @@ int interpret(ast_ *n) {
   int lhs;
   int rhs;
   int num;
-  if (n->type != ANUM) {
-    lhs = interpret(n->binary.left);
-    rhs = interpret(n->binary.right);
-    free(n);
-  } else {
+  ast_type type = n->type;
+
+  if (n->type == ANUM) {
     num = n->num;
     free(n);
     return num;
   }
-  switch (n->type) {
+
+  lhs = interpret(n->binary.left);
+  rhs = interpret(n->binary.right);
+  free(n);
+
+  switch (type) {
   case AADD:
     return lhs + rhs;
   case ASUB:
