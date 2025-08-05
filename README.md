@@ -1,5 +1,5 @@
 # pratt-parser
-it's very rudimentary, and i wrote it to learn how pratt parser works.
+it's quite rudimentary, and i wrote it to learn how a pratt parser works.
 
 ## References
   - a good [article](https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html) about parser.
